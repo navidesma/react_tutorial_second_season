@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import FormComponent from "./components/FormComponent/FormComponent";
 import TodoItem from "./components/TodoItem/TodoItem";
@@ -6,10 +6,23 @@ import TodoItem from "./components/TodoItem/TodoItem";
 function App() {
   const [list, setList] = useState([]);
 
+  const [resetInputs, setResetInputs] = useState(false);
+
+
+  useEffect(() => {
+    if (resetInputs) {
+      const setResetInputsToDefault = setTimeout(() => {setResetInputs(false)}, 500);
+      return () => {
+        clearTimeout(setResetInputsToDefault);
+      };
+    }
+  }, [resetInputs]);
+
   const addTodoHandler = (data) => {
     setList((prevState) => {
       return [...prevState, data];
     });
+    setResetInputs(true);
   };
 
   const deleteTodo = (title) => {
@@ -20,7 +33,7 @@ function App() {
   };
   return (
     <div className="container-lg">
-      <FormComponent addTodoHandler={addTodoHandler} />
+      <FormComponent addTodoHandler={addTodoHandler} resetInputs={resetInputs} />
 
       {list.map((item, index) => {
         return (
